@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##
-# Set cross-compile environment for building the srf05mod and srf05web packages for MIPS
+# Set cross-compile environment for building the tests for MIPS
 # using the OpenWrt toolchain (build OpenWrt first).
 ##
 
