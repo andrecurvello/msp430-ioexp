@@ -42,24 +42,25 @@ int main(void)
 		// read FW version
 		cout << "FW-Version = " << (int)(ex->getFirmwareVersion()) << endl;
 
-		// configure all as output
+		// configure all as input
 		for(int pin = 0; pin < 8; pin++)
 		{
-			ex->configureOut(static_cast<IOExpPin>(1 << pin));
+			ex->configureInPD(static_cast<IOExpPin>(1 << pin));
 		}
 
 		// set all to high
 		for(int pin = 0; pin < 8; pin++)
 		{
-			ex->writeOut(static_cast<IOExpPin>(1 << pin), IOExpLogVal::HIGH);
-			sleep(1);
-		}
-	
-		// set all to low
-		for(int pin = 0; pin < 8; pin++)
-		{
-			ex->writeOut(static_cast<IOExpPin>(1 << pin), IOExpLogVal::LOW);
-			sleep(1);
+			cout << "State of pin [" << pin << "] is ";
+			
+			if(ex->readIn(static_cast<IOExpPin>(1 << pin)) == IOExpLogVal::HIGH) {
+				cout << "HIGH";
+			}
+			else {
+				cout << "LOW";
+			}
+			
+			cout << endl;
 		}
 	}
 	catch (exception& e)

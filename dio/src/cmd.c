@@ -298,7 +298,7 @@ void cmd_get_fwversion(i2c_cmd_args *args)
 	// FIXME: add to global defines
 	// current fw-version
 	i2cslave_cmdproc_clrres();
-	i2cslave_cmdproc_addres(0x42);
+	i2cslave_cmdproc_addres(0x01);
 
 #ifdef SERIAL_DEBUG
 	cio_printf("%s\n\r", __func__);

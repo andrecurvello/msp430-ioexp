@@ -1,3 +1,22 @@
+/*
+ * This file is part of the mps430-ioexp project.
+ *
+ * Copyright (C) 2011 Stefan Wendler <sw@kaltpost.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -40,12 +59,11 @@ void ioexp::IOExpDio::configureIn(ioexp::IOExpPin pin)
 	mbus->write(address, msg1);
 
 	pren &= ~(unsigned char)pin;
-/*
+
 	std::vector<unsigned char> msg2 = {CMD_SET_REN, pren};
 	mbus->write(address, msg2);
 
 	writeOut(pin, ioexp::IOExpLogVal::LOW);
-*/
 }
 
 void ioexp::IOExpDio::configureInPU(ioexp::IOExpPin pin)
@@ -61,7 +79,6 @@ void ioexp::IOExpDio::configureInPU(ioexp::IOExpPin pin)
 	mbus->write(address, msg2);
 
 	writeOut(pin, ioexp::IOExpLogVal::HIGH);
-
 }
 
 void ioexp::IOExpDio::configureInPD(ioexp::IOExpPin pin)
@@ -95,8 +112,6 @@ void ioexp::IOExpDio::writeOut(ioexp::IOExpPin pin, ioexp::IOExpLogVal value)
 ioexp::IOExpLogVal ioexp::IOExpDio::readIn(ioexp::IOExpPin pin)	
 {
 	std::vector<unsigned char> res = mbus->read(address, CMD_GET_PIN, 1);
-
-	printf("res: %02x\n", res[0]);
 
 	if(res[0] & (unsigned char)pin) {
 		return ioexp::IOExpLogVal::HIGH;

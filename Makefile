@@ -15,10 +15,13 @@ DEPLOYDIR	= deploy
 TMPDIR		= /tmp
 VERSION		= 0.1
 
-all: target target-test
+all: target api target-test
 
 lib:
 	make -C ./libemb/
+
+api:
+	make -C ./api/src
 
 target: lib
 	make -C $(SRCDIR)
@@ -41,6 +44,7 @@ test-clean:
 	make -C $(TESTDIR)/api/output clean
 
 clean: test-clean
+	make -C ./api/src clean
 	make -C ./libemb/ clean
 	make -C $(SRCDIR) clean
 	rm -fr doc/gen
