@@ -20,6 +20,15 @@
 #include <msp430.h>
 #include <legacymsp430.h>
 
+
+/* If serial debug is enabeld, P1.1 and P1.2 are not usable since they are used for RX/TX */
+/* #define SERIAL_DEBUG	1 */
+
+#ifdef SERIAL_DEBUG
+#include "serial.h"
+#include "conio.h"
+#endif
+
 #include "cmd.h"
 
 /* Commands */
@@ -97,6 +106,11 @@ static unsigned int	 interrupt_cnt[] = {0, 0, 0, 0, 0, 0, 0, 0};
 void i2c_cmd_init()
 {
 	i2cslave_cmdproc_init(I2C_ADDR, &cmds);
+
+#ifdef SERIAL_DEBUG
+	serial_clk_init(16000000L, 9600);
+    cio_printf("%s\n\r", __func__);
+#endif
 }
 
 void cmd_set_pdir(i2c_cmd_args *args)
@@ -104,8 +118,20 @@ void cmd_set_pdir(i2c_cmd_args *args)
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
 
+#ifdef SERIAL_DEBUG
+	P1DIR = (0b11000110 & P1DIR) | (p1 & 0b00111001);
+#else
 	P1DIR = (0b11000000 & P1DIR) | p1;
+#endif
 	P2DIR = (0b11111100 & P2DIR) | p2;
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::P1DIR:", __func__);
+	cio_printb(P1DIR, 8);
+    cio_printf(", P2DIR: ");
+	cio_printb(P2DIR, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_set_pout(i2c_cmd_args *args)
@@ -113,8 +139,20 @@ void cmd_set_pout(i2c_cmd_args *args)
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
 
+#ifdef SERIAL_DEBUG
+	P1OUT = (0b11000000 & P1OUT) | (p1 & 0b00111001);
+#else
 	P1OUT = (0b11000000 & P1OUT) | p1;
+#endif
 	P2OUT = (0b11111100 & P2OUT) | p2;
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::P1OUT:", __func__);
+	cio_printb(P1OUT, 8);
+    cio_printf(", P2OUT: ");
+	cio_printb(P2OUT, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_get_pin(i2c_cmd_args *args)
@@ -124,6 +162,12 @@ void cmd_get_pin(i2c_cmd_args *args)
 
 	i2cslave_cmdproc_clrres();
 	i2cslave_cmdproc_addres(p1 | p2);
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::p1 | p2:", __func__);
+	cio_printb(p1 | p2, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_set_pir(i2c_cmd_args *args)
@@ -131,12 +175,30 @@ void cmd_set_pir(i2c_cmd_args *args)
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
 
+#ifdef SERIAL_DEBUG
+	P1IE = (0b11000000 & P1OUT) | (p1 & 0b00111001);
+#else
 	P1IE = (0b11000000 & P1OUT) | p1;
+#endif
 	P2IE = (0b11111100 & P2OUT) | p2;
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::P1IE:", __func__);
+	cio_printb(P1IE, 8);
+    cio_printf(", P2IE: ");
+	cio_printb(P2IE, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_get_pir(i2c_cmd_args *args)
 {
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::interrupt_flags:", __func__);
+	cio_printb(interrupt_flags, 8);
+    cio_printf("\n\r");
+#endif
+
 	i2cslave_cmdproc_clrres();
 	i2cslave_cmdproc_addres(interrupt_flags);
 	interrupt_flags = 0;
@@ -155,6 +217,14 @@ void cmd_get_pirc(i2c_cmd_args *args)
 	i2cslave_cmdproc_clrres();
 	i2cslave_cmdproc_addres(hi);
 	i2cslave_cmdproc_addres(low);
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::interrupt_cnt:", __func__);
+	cio_printb(hi, 8);
+	cio_printf(" ");
+	cio_printb(low, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_set_ren(i2c_cmd_args *args)
@@ -162,8 +232,20 @@ void cmd_set_ren(i2c_cmd_args *args)
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
 
+#ifdef SERIAL_DEBUG
 	P1REN = (0b11000000 & P1REN) | p1;
+#else
+	P1REN = (0b11000000 & P1REN) | (p1 & 0b00111001);
+#endif
 	P2REN = (0b11111100 & P2REN) | p2;
+
+#ifdef SERIAL_DEBUG
+    cio_printf("%s::P1REN:", __func__);
+	cio_printb(P1REN, 8);
+    cio_printf(", P2REN: ");
+	cio_printb(P2REN, 8);
+    cio_printf("\n\r");
+#endif
 }
 
 void cmd_reset(i2c_cmd_args *args)
@@ -193,6 +275,10 @@ void cmd_reset(i2c_cmd_args *args)
 	interrupt_cnt[5] = 0;
 	interrupt_cnt[6] = 0;
 	interrupt_cnt[7] = 0;
+
+#ifdef SERIAL_DEBUG
+	cio_printf("%s\n\r", __func__);
+#endif
 }
 
 void cmd_get_fwtype(i2c_cmd_args *args)
@@ -201,6 +287,10 @@ void cmd_get_fwtype(i2c_cmd_args *args)
 	// 0x01 = DIO
 	i2cslave_cmdproc_clrres();
 	i2cslave_cmdproc_addres(0x01);
+
+#ifdef SERIAL_DEBUG
+	cio_printf("%s\n\r", __func__);
+#endif
 }
 
 void cmd_get_fwversion(i2c_cmd_args *args)
@@ -208,7 +298,11 @@ void cmd_get_fwversion(i2c_cmd_args *args)
 	// FIXME: add to global defines
 	// current fw-version
 	i2cslave_cmdproc_clrres();
-	i2cslave_cmdproc_addres(0x01);
+	i2cslave_cmdproc_addres(0x42);
+
+#ifdef SERIAL_DEBUG
+	cio_printf("%s\n\r", __func__);
+#endif
 }
 
 interrupt(PORT1_VECTOR) PORT1_ISR(void)

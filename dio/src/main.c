@@ -24,6 +24,7 @@
 
 #include <msp430.h>
 
+// #include "serial.h"
 #include "cmd.h"
 
 void clock_init(void)
@@ -46,6 +47,9 @@ int main(void)
 	gpio_init();
 	i2c_cmd_init();
 	
+	// serial_clk_init(16000000L, 9600);
+	// cio_print("DIO - I2C Digital IO\n\r");
+
 	while (1) {
 		__asm__("nop");
 	}

@@ -31,12 +31,14 @@ target-test:
 	(cd $(TESTDIR)/dio/button-irqcnt && make)
 	(cd $(TESTDIR)/dio/button-poll && make)
 	(cd $(TESTDIR)/dio/chasing && make)
+	(cd $(TESTDIR)/api/output && make)
 
 test-clean:
 	make -C $(TESTDIR)/dio/button-irq clean
 	make -C $(TESTDIR)/dio/button-irqcnt clean
 	make -C $(TESTDIR)/dio/button-poll clean
 	make -C $(TESTDIR)/dio/chasing clean
+	make -C $(TESTDIR)/api/output clean
 
 clean: test-clean
 	make -C ./libemb/ clean
