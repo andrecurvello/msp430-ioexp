@@ -8,4 +8,4 @@ chasing: main.c
 	$(CC) $(CFLAGS) main.c $(LDFLAGS) -o chasing 
 
 clean:
-	rm chasing
+	rm -f chasing

@@ -8,4 +8,4 @@ button-poll: main.c
 	$(CC) $(CFLAGS) main.c $(LDFLAGS) -o button-poll 
 
 clean:
-	rm button-poll 
+	rm -f button-poll 

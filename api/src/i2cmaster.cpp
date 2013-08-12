@@ -68,12 +68,6 @@ void ioexp::I2CMasterBus::write(int slaveAddress, std::vector<unsigned char> dat
     }
 }
 
-void flushfd(int fd) 
-{
-	unsigned char b; 
-	while(read(fd, &b, 1) > 0) printf(".");
-}
-
 std::vector<unsigned char> ioexp::I2CMasterBus::read(int slaveAddress, unsigned char reg, int expectedLength)
 {
 	TRACE
@@ -82,8 +76,6 @@ std::vector<unsigned char> ioexp::I2CMasterBus::read(int slaveAddress, unsigned 
 
     struct i2c_rdwr_ioctl_data packets;
     struct i2c_msg messages[2];
-
-	flushfd(fd);
 
     messages[0].addr  = slaveAddress;
     messages[0].flags = 0;
@@ -99,6 +91,7 @@ std::vector<unsigned char> ioexp::I2CMasterBus::read(int slaveAddress, unsigned 
     packets.nmsgs     = 2;
 
     if(ioctl(fd, I2C_RDWR, &packets) < 0) {
+		delete buf;
         throw IOExpException("Unable to send data");
     }
 	
@@ -132,6 +125,7 @@ std::vector<unsigned char> ioexp::I2CMasterBus::xfer(int slaveAddress, std::vect
     packets.nmsgs     = 2;
 
     if(ioctl(fd, I2C_RDWR, &packets) < 0) {
+		delete buf;
         throw IOExpException("Unable to send data");
     }
 	

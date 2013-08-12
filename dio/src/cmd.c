@@ -22,7 +22,8 @@
 
 
 /* If serial debug is enabeld, P1.1 and P1.2 are not usable since they are used for RX/TX */
-/* #define SERIAL_DEBUG	1 */
+
+// #define SERIAL_DEBUG
 
 #ifdef SERIAL_DEBUG
 #include "serial.h"
@@ -107,9 +108,11 @@ void i2c_cmd_init()
 {
 	i2cslave_cmdproc_init(I2C_ADDR, &cmds);
 
+	cmd_reset(0L);
+	
 #ifdef SERIAL_DEBUG
 	serial_clk_init(16000000L, 9600);
-    cio_printf("%s\n\r", __func__);
+    cio_printf("%s\n\r", __func__);	
 #endif
 }
 
@@ -117,6 +120,8 @@ void cmd_set_pdir(i2c_cmd_args *args)
 {
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
+
+	i2cslave_cmdproc_clrres();
 
 #ifdef SERIAL_DEBUG
 	P1DIR = (0b11000110 & P1DIR) | (p1 & 0b00111001);
@@ -138,6 +143,8 @@ void cmd_set_pout(i2c_cmd_args *args)
 {
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
+
+	i2cslave_cmdproc_clrres();
 
 #ifdef SERIAL_DEBUG
 	P1OUT = (0b11000000 & P1OUT) | (p1 & 0b00111001);
@@ -174,6 +181,8 @@ void cmd_set_pir(i2c_cmd_args *args)
 {
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
+
+	i2cslave_cmdproc_clrres();
 
 #ifdef SERIAL_DEBUG
 	P1IE = (0b11000000 & P1OUT) | (p1 & 0b00111001);
@@ -232,6 +241,8 @@ void cmd_set_ren(i2c_cmd_args *args)
 	unsigned char p1 =  (args->args[0] & 0b00111111);
 	unsigned char p2 = ((args->args[0] & 0b11000000) >> 6); 
 
+	i2cslave_cmdproc_clrres();
+
 #ifdef SERIAL_DEBUG
 	P1REN = (0b11000000 & P1REN) | p1;
 #else
@@ -250,8 +261,10 @@ void cmd_set_ren(i2c_cmd_args *args)
 
 void cmd_reset(i2c_cmd_args *args)
 {
-	P1DIR &= 0b11111111;
-	P2DIR &= 0b11111111;
+	i2cslave_cmdproc_clrres();
+
+	P1DIR |= 0b00111111;
+	P2DIR |= 0b00000011;
 
 	P1OUT &= 0b11000000;
 	P2OUT &= 0b11111100;
@@ -259,8 +272,10 @@ void cmd_reset(i2c_cmd_args *args)
 	P1REN &= 0b11000000;
 	P2REN &= 0b11111100;
 
-	P1SEL &= 0b11000100;
-	P2SEL &= 0b11111100;
+	P1SEL  &= 0b11000000;
+	P2SEL  &= 0b11111100;
+	P1SEL2 &= 0b11000000;
+	P2SEL2 &= 0b11111100;
 
 	P1IE &= 0b11000000;
 	P2IE &= 0b11111100;

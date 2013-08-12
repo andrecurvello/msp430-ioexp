@@ -6,7 +6,7 @@ LIBS=-lioexp_i2capi
 SOURCES=main.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o) 
-EXECUTABLE=i2c_api_output
+EXECUTABLE=i2c_api_inout
 
 all: $(SOURCES) $(EXECUTABLE)
 	

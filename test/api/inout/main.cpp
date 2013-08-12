@@ -43,26 +43,31 @@ int main(void)
 		// read FW version
 		cout << "FW-Version = " << (int)(ex->getFirmwareVersion()) << endl;
 
-		// configure all as output
-		for(int pin = 0; pin < 8; pin++)
+		// configure first 4 pins as output
+		for(int pin = 0; pin < 4; pin++)
 		{
 			cout << "Set pin [" << pin << "] to output" << endl ;
 			
 			ex->configureOut(static_cast<IOExpPin>(1 << pin));
 		}
 
-		// set all to high
-		for(int pin = 0; pin < 8; pin++)
+		// configure second 4 pins as input
+		for(int pin = 4; pin < 8; pin++)
 		{
-			ex->writeOut(static_cast<IOExpPin>(1 << pin), IOExpLogVal::HIGH);
-			sleep(1);
+			cout << "Set pin [" << pin << "] to input" << endl ;
+		
+			ex->configureInPD(static_cast<IOExpPin>(1 << pin));
 		}
-	
-		// set all to low
-		for(int pin = 0; pin < 8; pin++)
+		
+		cout << "Press any key to light LED" << endl;
+		
+		while(1) 
 		{
-			ex->writeOut(static_cast<IOExpPin>(1 << pin), IOExpLogVal::LOW);
-			sleep(1);
+			// copy state of input to output
+			for(int pin = 0; pin < 4; pin++)
+			{			
+				ex->writeOut(static_cast<IOExpPin>(1 << pin), ex->readIn(static_cast<IOExpPin>(1 << (pin + 4))));
+			}
 		}
 	}
 	catch (exception& e)

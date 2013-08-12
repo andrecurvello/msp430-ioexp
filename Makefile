@@ -7,45 +7,56 @@
 export TARCH=MSP430
 
 BASEDIR 	= .
-SRCDIR  	= dio/src
-TESTDIR		= test
-BINDIR		= bin
-FIRMWARE   ?= firmware.elf
-DEPLOYDIR	= deploy
-TMPDIR		= /tmp
+FIRMWARE   ?= ./bin/msp430_ioexp_dio_firmware.elf
 VERSION		= 0.1
+CLIENV		= mips
 
-all: target api target-test
+all: dio dio-test client-api client-api-test
 
 lib:
 	make -C ./libemb/
 
-api:
+lib-clean:
+	make -C ./libemb/ clean
+
+dio: lib
+	make -C dio/src
+
+dio-clean: lib
+	make -C dio/src clean
+	
+dio-test: dio
+	make -C ./test/dio/button-irq
+	make -C ./test/dio/button-irqcnt
+	make -C ./test/dio/button-poll
+	make -C ./test/dio/chasing
+
+dio-test-clean:
+	make -C ./test/dio/button-irq clean
+	make -C ./test/dio/button-irqcnt clean
+	make -C ./test/dio/button-poll clean
+	make -C ./test/dio/chasing clean
+
+client-api:
+	test -f setenv-$(CLIENV).sh && . ./setenv-$(CLIENV).sh
 	make -C ./api/src
 
-target: lib
-	make -C $(SRCDIR)
-
-flash-target: target
-	mspdebug rf2500 "prog $(BINDIR)/$(FIRMWARE)"
-
-target-test:
-	(cd $(TESTDIR)/dio/button-irq && make)
-	(cd $(TESTDIR)/dio/button-irqcnt && make)
-	(cd $(TESTDIR)/dio/button-poll && make)
-	(cd $(TESTDIR)/dio/chasing && make)
-	(cd $(TESTDIR)/api/output && make)
-
-test-clean:
-	make -C $(TESTDIR)/dio/button-irq clean
-	make -C $(TESTDIR)/dio/button-irqcnt clean
-	make -C $(TESTDIR)/dio/button-poll clean
-	make -C $(TESTDIR)/dio/chasing clean
-	make -C $(TESTDIR)/api/output clean
-
-clean: test-clean
+client-api-clean:
 	make -C ./api/src clean
-	make -C ./libemb/ clean
-	make -C $(SRCDIR) clean
+	
+client-api-test: client-api
+	make -C ./test/api/output
+	make -C ./test/api/input
+	make -C ./test/api/inout
+		
+client-api-test-clean:
+	make -C ./test/api/output clean
+	make -C ./test/api/input clean
+	make -C ./test/api/inout clean
+
+flash-target: dio
+	mspdebug rf2500 "prog $(FIRMWARE)"
+	
+clean: dio-clean dio-test-clean client-api-clean client-api-test-clean lib-clean
 	rm -fr doc/gen
-	rm -f bin/firmware.*
+	rm -f  bin/*

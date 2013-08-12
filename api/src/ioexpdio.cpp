@@ -64,6 +64,8 @@ void ioexp::IOExpDio::configureIn(ioexp::IOExpPin pin)
 	mbus->write(address, msg2);
 
 	writeOut(pin, ioexp::IOExpLogVal::LOW);
+	
+	mbus->read(address, CMD_GET_PIN, 1);
 }
 
 void ioexp::IOExpDio::configureInPU(ioexp::IOExpPin pin)
@@ -79,6 +81,8 @@ void ioexp::IOExpDio::configureInPU(ioexp::IOExpPin pin)
 	mbus->write(address, msg2);
 
 	writeOut(pin, ioexp::IOExpLogVal::HIGH);
+	
+	mbus->read(address, CMD_GET_PIN, 1);
 }
 
 void ioexp::IOExpDio::configureInPD(ioexp::IOExpPin pin)
@@ -94,6 +98,8 @@ void ioexp::IOExpDio::configureInPD(ioexp::IOExpPin pin)
 	mbus->write(address, msg2);
 
 	writeOut(pin, ioexp::IOExpLogVal::LOW);
+	
+	mbus->read(address, CMD_GET_PIN, 1);
 }
 
 void ioexp::IOExpDio::writeOut(ioexp::IOExpPin pin, ioexp::IOExpLogVal value)

@@ -15,12 +15,13 @@ all: $(SOURCES) $(LIBRARY)
 	
 $(LIBRARY): $(OBJECTS)
 	@#printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
-	@mkdir -p $(LIBDIR)
+	mkdir -p $(LIBDIR)
 	$(AR) $(ARFLAGS) $@ $^ && cp $(LIBRARY) $(LIBDIR)
 
 .cpp.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm $(OBJECTS)
-	rm $(LIBRARY)
+	rm -f $(OBJECTS)
+	rm -f $(LIBRARY)
+	rm -fr $(LIBDIR)

@@ -34,6 +34,7 @@ int main(void)
 		ex = new IOExpDio(mb, 0x48);
 
 		// reset MCU
+		cout << "Performe MCU reset" << endl;
 		ex->reset();
 
 		// read HW type
@@ -45,10 +46,20 @@ int main(void)
 		// configure all as input
 		for(int pin = 0; pin < 8; pin++)
 		{
-			ex->configureInPD(static_cast<IOExpPin>(1 << pin));
+			cout << "Set pin [" << pin << "] to input" << endl ;
+			
+			// this pins do have external pullups
+			if(pin == 1 || pin == 3) 
+			{
+				ex->configureIn(static_cast<IOExpPin>(1 << pin));
+			}
+			else
+			{
+				ex->configureInPD(static_cast<IOExpPin>(1 << pin));
+			}
 		}
 
-		// set all to high
+		// read all pins		
 		for(int pin = 0; pin < 8; pin++)
 		{
 			cout << "State of pin [" << pin << "] is ";

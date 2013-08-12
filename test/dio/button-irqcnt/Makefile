@@ -8,4 +8,4 @@ button-irqcnt: main.c
 	$(CC) $(CFLAGS) main.c $(LDFLAGS) -o button-irqcnt 
 
 clean:
-	rm button-irqcnt 
+	rm -f button-irqcnt 
